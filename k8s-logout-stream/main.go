@@ -29,6 +29,7 @@ func main() {
 	byteReader, err := clientset.CoreV1().Pods("hidevopsio-alpha").
 		GetLogs("hidevopsio-log-6b94b49dbc-xr27t", &v1.PodLogOptions{Follow: true}).Context(ctx).Stream()
 	if err != nil {
+		fmt.Println("Error ",err)
 		return
 	}
 
@@ -38,13 +39,16 @@ func main() {
 		str, err := reader.ReadString('\n')
 		fmt.Println(str)
 		if err != nil {
+			fmt.Println("Error ",err)
 			break
 		}
 		if err != nil {
+			fmt.Println("Error ",err)
 			break
 		}
 	}
 	if err == io.EOF {
+		fmt.Println("Error ",err)
 		return
 	}
 }

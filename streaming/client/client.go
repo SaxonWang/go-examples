@@ -65,6 +65,24 @@ func sayHello1(c pb.GreeterClient) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 func sayHello2(c pb.GreeterClient) {
 	var err error
 	stream, err := c.SayHello2(context.Background())
