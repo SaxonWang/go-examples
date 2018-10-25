@@ -9,6 +9,7 @@ import (
 	"k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func main() {
@@ -25,9 +26,17 @@ func main() {
 		panic(err.Error())
 	}
 
+	pod,err := clientset.CoreV1().Pods("demo").Get("hiadmin-26-cqmjd",meta_v1.GetOptions{})
+	if err != nil {
+		fmt.Println("Error ",err)
+		return
+	}
+
+	fmt.Println("pod:",pod)
+
 	ctx := context.TODO()
-	byteReader, err := clientset.CoreV1().Pods("hidevopsio-alpha").
-		GetLogs("hidevopsio-log-6b94b49dbc-xr27t", &v1.PodLogOptions{Follow: true}).Context(ctx).Stream()
+	byteReader, err := clientset.CoreV1().Pods("demo").
+		GetLogs("hiadmin-26-cqmjd", &v1.PodLogOptions{Follow: true}).Context(ctx).Stream()
 	if err != nil {
 		fmt.Println("Error ",err)
 		return

@@ -22,6 +22,9 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+var podname string = "hello-world-13-79fd84d68-4dq8x"
+var namespace string = "demo"
+
 var addr = flag.String("addr", "localhost:8080", "http service address")
 
 var upgrader = websocket.Upgrader{} // use default options
@@ -61,7 +64,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 
-	reader,err := GetLog("hidevopsio-alpha","hidevopsio-log-6b94b49dbc-xr27t")
+	reader,err := GetLog(namespace,podname)
 	if err != nil {
 		log.Print("Error ",err)
 		return
@@ -75,7 +78,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Println("message",message)
 
--		err = c.WriteMessage(mt, []byte(fmt.Sprintf("Logs in Namespace:%s PodName: %s","hidevopsio-alpha","hidevopsio-log-6b94b49dbc-xr27t")))
+		//err = c.WriteMessage(mt, []byte(fmt.Sprintf("Logs in Namespace:%s PodName: %s","hidevopsio-alpha","hidevopsio-log-6b94b49dbc-xr27t")))
 		err = nil
 		for err == nil {
 			str, err := reader.ReadString('\n')
@@ -136,22 +139,22 @@ var homeTemplate = template.Must(template.New("").Parse(`
                 d.innerHTML = message;
                 oDiv.appendChild(d);
             };
-            
-            
+
+
             var output = document.getElementById("output");
             var logtext = document.getElementById("logtext");
             logtext.style.backgroundColor = "#000000";
             logtext.style.color="#F8F8FF";
             //var ws;
-            
+
             var print = function(message) {
                 var d = document.createElement("div");
                 d.innerHTML = message;
                 output.appendChild(d);
             };
 
-            var ws = new WebSocket("ws://localhost:8080/echo");
-
+//            var ws = new WebSocket("ws://localhost:8080/echo");
+            ws = new WebSocket("{{.}}");
             ws.onopen = function(evt) {
                 console.log("Connection open ...");
                 ws.send("Hello WebSockets!");
@@ -163,7 +166,7 @@ var homeTemplate = template.Must(template.New("").Parse(`
                     i=1
                 }
 
-                
+
                 print(evt.data)
                 //ws.close();
             };
