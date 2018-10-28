@@ -9,10 +9,16 @@ import (
 	"k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
-	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
-
+var podname string = "hidevopsio-log-6b94b49dbc-xr27t"
+var namespace string = "hidevopsio-alpha"
 func main() {
+	if err := GetLogs(namespace,podname);err != nil {
+		fmt.Println("Error",err)
+	}
+}
+
+func GetLogs(namespace, name string) error {
 	kubeconfig := flag.String("kubeconfig", "/Users/wang/.kube/config", "(optional) absolute path to the kubeconfig file")
 	flag.Parse()
 
@@ -21,32 +27,25 @@ func main() {
 		panic(err.Error())
 	}
 
+
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	pod,err := clientset.CoreV1().Pods("demo").Get("hiadmin-26-cqmjd",meta_v1.GetOptions{})
-	if err != nil {
-		fmt.Println("Error ",err)
-		return
-	}
-
-	fmt.Println("pod:",pod)
-
 	ctx := context.TODO()
-	byteReader, err := clientset.CoreV1().Pods("demo").
-		GetLogs("hiadmin-26-cqmjd", &v1.PodLogOptions{Follow: true}).Context(ctx).Stream()
+	byteReader, err := clientset.CoreV1().Pods("hidevopsio-alpha").
+		GetLogs("hidevopsio-log-6b94b49dbc-xr27t", &v1.PodLogOptions{Follow: true}).Context(ctx).Stream()
 	if err != nil {
 		fmt.Println("Error ",err)
-		return
+		return err
 	}
 
 	reader := bufio.NewReader(byteReader)
 	err = nil
 	for err == nil {
 		str, err := reader.ReadString('\n')
-		fmt.Println(str)
+		fmt.Println("--",str)
 		if err != nil {
 			fmt.Println("Error ",err)
 			break
@@ -58,6 +57,7 @@ func main() {
 	}
 	if err == io.EOF {
 		fmt.Println("Error ",err)
-		return
+		return err
 	}
+	return nil
 }

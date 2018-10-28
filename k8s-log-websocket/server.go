@@ -22,7 +22,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var podname string = "hello-world-13-79fd84d68-4dq8x"
+var podname string = "hello-world-36-d98fc675d-p85xz"
 var namespace string = "demo"
 
 var addr = flag.String("addr", "localhost:8080", "http service address")
@@ -55,6 +55,16 @@ func GetLog(namespac,name string) (*bufio.Reader,error) {
 	return bufio.NewReader(byteReader),nil
 }
 
+var Reader *bufio.Reader
+
+func init() {
+	var err error
+	Reader,err = GetLog(namespace,podname)
+	if err != nil {
+		log.Print("Error ",err)
+		return
+	}
+}
 
 func echo(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
@@ -63,12 +73,6 @@ func echo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer c.Close()
-
-	reader,err := GetLog(namespace,podname)
-	if err != nil {
-		log.Print("Error ",err)
-		return
-	}
 
 	for {
 		mt, message, err := c.ReadMessage()
@@ -81,7 +85,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 		//err = c.WriteMessage(mt, []byte(fmt.Sprintf("Logs in Namespace:%s PodName: %s","hidevopsio-alpha","hidevopsio-log-6b94b49dbc-xr27t")))
 		err = nil
 		for err == nil {
-			str, err := reader.ReadString('\n')
+			str, err := Reader.ReadString('\n')
 			if err != nil {
 				fmt.Println("Error ",err)
 				break
