@@ -31,6 +31,7 @@ func main() {
 		}
 	}()
 
+
 	time.Sleep(time.Second*2)
 	fmt.Println("sleep 2 second")
 	str <- ""

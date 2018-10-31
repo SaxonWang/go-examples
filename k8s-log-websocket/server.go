@@ -159,6 +159,7 @@ var homeTemplate = template.Must(template.New("").Parse(`
 
 //            var ws = new WebSocket("ws://localhost:8080/echo");
             ws = new WebSocket("{{.}}");
+			ws.send("visit");
             ws.onopen = function(evt) {
                 console.log("Connection open ...");
                 ws.send("Hello WebSockets!");
