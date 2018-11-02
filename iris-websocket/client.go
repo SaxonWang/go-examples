@@ -7,7 +7,7 @@ import (
 
 func main() {
 	//ws 服务端地址
-	var url = "ws://localhost:8080/socket?namespace=demo&name=566"
+	var url = "ws://localhost:8081/websocket/buildLogs?namespace=demo&name=hello-world&verbose=true"
 	ClientLoop(url)
 }
 
@@ -38,6 +38,6 @@ func ClientLoop(url string) error {
 			fmt.Println(string(msg[:n]))
 		}
 
-		WS.Write([]byte("hello service"))
+		//WS.Write([]byte("hello service"))
 	}
 }
